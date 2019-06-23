@@ -3,7 +3,7 @@ package com.credomob.routes
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
-import com.credomob.Main.{AkkaHttpRestServer, Donut, HttpJsonSupport, Ingredient}
+import com.credomob.AkkaHttpServer.{AkkaHttpRestServer, Donut, HttpJsonSupport, Ingredient}
 import com.credomob.models.DonutDao
 import com.typesafe.scalalogging.LazyLogging
 
@@ -119,12 +119,31 @@ class DonutRoutes extends HttpJsonSupport with LazyLogging{
           complete(StatusCodes.OK,output)
         }
       }
-    } ~ path("ingredinets-to-case-class"){
+    } ~ path("ingredients-to-case-class"){
       get{
-        parameters('donutName.as[String], 'priceLevell.as[Double]).as(Ingredient){ ingredient =>
+        parameters('donutName.as[String], 'priceLevel.as[Double]).as(Ingredient){ ingredient =>
           val output = s"Encoded query parameters into case class, ingredient: $ingredient"
           complete(StatusCodes.OK,output)
         }
+      }
+    } ~ path("request-with-headers"){
+      get{
+        extractRequest{ httpRequest =>
+          val headers = httpRequest.headers.mkString(", ")
+          complete(StatusCodes.OK,s"headers=$headers")
+        }
+      }
+    } ~ path("multiple-segments" / Segments){segments =>
+      get{
+        val partA :: partB :: partC :: Nil = segments
+        val output =
+          """
+            |Received the following Segments = $segments, with
+            |partA = $partA
+            |partB = $partB
+            |partC = $partC
+          """.stripMargin
+        complete(StatusCodes.OK, output)
       }
     }
   }

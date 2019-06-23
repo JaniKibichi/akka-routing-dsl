@@ -1,7 +1,7 @@
 package com.credomob.models
 
 import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
-import com.credomob.Main.{Donut, Donuts}
+import com.credomob.AkkaHttpServer.{Donut, Donuts}
 
 import scala.concurrent.Future
 import scala.util.Try
